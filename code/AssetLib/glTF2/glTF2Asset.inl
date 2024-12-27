@@ -1828,6 +1828,13 @@ inline void Skin::Read(Value &obj, Asset &r) {
     }
 }
 
+inline void TextureID::Read(Value &obj, Asset &r) {
+    if (Value *sourceVal = FindUInt(obj, "source")) {
+        sourceId = sourceVal->GetUint();
+        r.images;
+    }
+}
+
 //vrm
 //static std::vector<std::string> shapeBlend = {
 //    "Neutral","A","I","U","E","O","Blink","Joy","Angry","Sorrow","Fun","LookUp","LookDown","LookLeft","LookRight","Blink_L","Blink_R",
@@ -2472,6 +2479,11 @@ inline void Asset::Load(const std::string &pFile, bool isBinary)
         //if (Value* skinsArray = FindArray(doc, "skins")) {
     //		skins.Retrieve(0);
     //	}
+    }
+    if (Value *texturesArray = FindArray(doc, "textures")) {
+        for (unsigned int i = 0; i < texturesArray->Size(); ++i) {
+            textureIDs.Retrieve(i);
+        }
     }
     if (Value* im = FindArray(doc, "images")) {
         for (unsigned int m = 0; m < im->Size(); ++m) {

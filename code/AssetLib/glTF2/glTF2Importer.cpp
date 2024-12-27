@@ -67,7 +67,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <rapidjson/rapidjson.h>
 
 //vrm
-void VRM_ReleaseVRMMeta(void *p) {
+ASSIMP_API void VRM_ReleaseVRMMeta(void *p) {
     VRM::VRMMetadata* meta = reinterpret_cast<VRM::VRMMetadata*>(p);
     if (meta) {
         delete meta;
@@ -1622,9 +1622,9 @@ static unsigned int countEmbeddedTextures(glTF2::Asset &r) {
     return numEmbeddedTexs;
 }
 
-void glTF2Importer::ImportEmbeddedTextures(glTF2::Asset &r) {
+void glTF2Importer::ImportEmbeddedTextures(glTF2::Asset &r, int numTex) {
     mEmbeddedTexIdxs.resize(r.images.Size(), -1);
-    const unsigned int numEmbeddedTexs = countEmbeddedTextures(r);
+    const unsigned int numEmbeddedTexs = numTex;
     if (numEmbeddedTexs == 0) {
         return;
     }
@@ -1676,6 +1676,18 @@ void glTF2Importer::ImportEmbeddedTextures(glTF2::Asset &r) {
     }
 }
 
+void glTF2Importer::ImportTextureRemap(glTF2::Asset &r, int numTex) {
+    int len = std::min(r.textureIDs.Size(), r.images.Size());
+    mRemapTexIdxs.resize(r.images.Size(), 0);
+    if (numTex == 0) {
+        return;
+    }
+
+    for (size_t i = 0; i < len; ++i) {
+        mRemapTexIdxs[i] = r.textureIDs[i].sourceId;
+    }
+}
+
 void glTF2Importer::ImportCommonMetadata(glTF2::Asset &a) {
     ASSIMP_LOG_DEBUG("Importing metadata");
     ai_assert(mScene->mMetaData == nullptr);
@@ -1721,7 +1733,11 @@ void glTF2Importer::InternReadFile(const std::string &pFile, aiScene *pScene, IO
     }
 
     // Copy the data out
-    ImportEmbeddedTextures(asset);
+
+    int numEmbeddedTexs = countEmbeddedTextures(asset);
+
+    ImportEmbeddedTextures(asset, numEmbeddedTexs);
+    ImportTextureRemap(asset, numEmbeddedTexs);
     ImportMaterials(asset);
 
     ImportMeshes(asset);
@@ -1758,7 +1774,7 @@ void glTF2Importer::InternReadFile(const std::string &pFile, aiScene *pScene, IO
 
             for (auto& t : table) {
                 if (t.value < 0) continue;
-                t.value = mEmbeddedTexIdxs[t.value];
+                t.value = mRemapTexIdxs[t.value];
             }
         }
     }

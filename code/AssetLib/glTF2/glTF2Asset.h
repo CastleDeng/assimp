@@ -978,15 +978,22 @@ struct Skin : public Object {
 };
 
 //! A texture and its sampler.
+struct TextureID : public Object {
+    int sourceId;
+
+    TextureID() = default;
+    void Read(Value &obj, Asset &r);
+};
+
 struct Texture : public Object {
     Ref<Sampler> sampler; //!< The ID of the sampler used by this texture. (required)
     Ref<Image> source; //!< The ID of the image used by this texture. (required)
 
-    //TextureFormat format; //!< The texture's format. (default: TextureFormat_RGBA)
-    //TextureFormat internalFormat; //!< The texture's internal format. (default: TextureFormat_RGBA)
+    // TextureFormat format; //!< The texture's format. (default: TextureFormat_RGBA)
+    // TextureFormat internalFormat; //!< The texture's internal format. (default: TextureFormat_RGBA)
 
-    //TextureTarget target; //!< The target that the WebGL texture should be bound to. (default: TextureTarget_TEXTURE_2D)
-    //TextureType type; //!< Texel datatype. (default: TextureType_UNSIGNED_BYTE)
+    // TextureTarget target; //!< The target that the WebGL texture should be bound to. (default: TextureTarget_TEXTURE_2D)
+    // TextureType type; //!< Texel datatype. (default: TextureType_UNSIGNED_BYTE)
 
     Texture() = default;
     void Read(Value &obj, Asset &r);
@@ -1212,6 +1219,7 @@ public:
     LazyDict<Scene> scenes;
     LazyDict<Skin> skins;
     LazyDict<Texture> textures;
+    LazyDict<TextureID> textureIDs;
 
     Ref<Scene> scene;
 
@@ -1236,6 +1244,7 @@ public:
             scenes(*this, "scenes"),
             skins(*this, "skins"),
             textures(*this, "textures") ,
+            textureIDs(*this, "textures"),
             mIOSystem(io),
             mSchemaDocumentProvider(schemaDocumentProvider) {
         // empty

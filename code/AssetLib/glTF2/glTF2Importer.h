@@ -69,7 +69,8 @@ protected:
     void SetupProperties(const Importer *pImp) override;
 
 private:
-    void ImportEmbeddedTextures(glTF2::Asset &a);
+    void ImportEmbeddedTextures(glTF2::Asset &a, int numTex);
+    void ImportTextureRemap(glTF2::Asset &a, int numTex);
     void ImportMaterials(glTF2::Asset &a);
     void ImportMeshes(glTF2::Asset &a);
     void ImportCameras(glTF2::Asset &a);
@@ -82,6 +83,7 @@ private:
 private:
     std::vector<unsigned int> meshOffsets;
     std::vector<int> mEmbeddedTexIdxs;
+    std::vector<int> mRemapTexIdxs;
     std::vector<std::vector<unsigned int>> mVertexRemappingTables; // for each converted aiMesh in the scene, it stores a list of vertices that are actually used
     aiScene *mScene;
 

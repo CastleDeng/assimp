@@ -803,6 +803,13 @@ namespace glTF2 {
         }
     }
 
+    inline void Write(Value &obj, TextureID &texID, AssetWriter &w) 
+    {
+        if (texID.sourceId) {
+            obj.AddMember("source", texID.sourceId, w.mAl);
+        }
+    }
+
     inline AssetWriter::AssetWriter(Asset& a)
         : mDoc()
         , mAsset(a)
